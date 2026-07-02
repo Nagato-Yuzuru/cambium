@@ -1,0 +1,56 @@
+# Managed by prek (https://github.com/j178/prek), a pre-commit-compatible runner.
+# Install with `just hooks`. Fast checks run on commit; heavy checks on push.
+# Local hooks call the shared `just` recipes (the single source of truth for each
+# task's command) via `mise exec --`, so `just` and the tools it runs are on PATH
+# even when git invokes the hook outside an activated shell.
+default_install_hook_types: [pre-commit, pre-push]
+
+# Vendored Claude Code skills/artifacts are not our source — don't lint or reformat them.
+exclude: '^\.claude/'
+
+repos:
+  - repo: builtin
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: mixed-line-ending
+      - id: check-merge-conflict
+
+  - repo: local
+    hooks:
+      # --- fast: run on every commit ---
+      - id: fmt
+        name: cargo fmt (check)
+        entry: mise exec -- just fmt-check
+        language: system
+        types: [rust]
+        pass_filenames: false
+      - id: typos
+        name: typos
+        entry: mise exec -- just spell
+        language: system
+        pass_filenames: false
+
+      # --- heavy: run on push only ---
+      - id: clippy
+        name: cargo clippy
+        entry: mise exec -- just lint
+        language: system
+        types: [rust]
+        pass_filenames: false
+        stages: [pre-push]
+      - id: test
+        name: cargo nextest
+        entry: mise exec -- just test
+        language: system
+        types: [rust]
+        pass_filenames: false
+        stages: [pre-push]
+      - id: deny
+        name: cargo deny check
+        entry: mise exec -- just deny
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

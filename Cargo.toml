@@ -1,0 +1,19 @@
+[workspace]
+resolver = "3"
+members = []
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT"
+authors = ["Nagato Yuzuru <nagato@yuzuru.me>"]
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }

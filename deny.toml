@@ -1,0 +1,36 @@
+# cargo-deny configuration — dependency governance for a reproducible tree.
+# Run with `just deny` (or `cargo deny check`).
+
+[graph]
+all-features = true
+
+[advisories]
+# Fail on any vulnerability or yanked crate; add advisory IDs to `ignore` with a note.
+yanked = "deny"
+ignore = []
+
+[licenses]
+# Permissive-only allowlist. Add a license here (with a note) only after a
+# deliberate decision — copyleft additions especially.
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-3.0",
+    "Zlib",
+]
+confidence-threshold = 0.9
+# The allowlist is forward-looking; don't warn about entries no dependency uses yet.
+unused-allowed-license = "allow"
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

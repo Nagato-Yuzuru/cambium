@@ -1,0 +1,8 @@
+# typos configuration — https://github.com/crate-ci/typos
+[files]
+# Vendored Claude Code skills are not our source; skip them.
+extend-exclude = [".claude/"]
+
+# Map a word to itself to declare it correct (not a misspelling).
+[default.extend-words]
+BA = "BA"  # "Bytecode Alliance" shorthand used in docs/architecture.md

@@ -1,0 +1,31 @@
+# Cambium developer environment — declarative & reproducible.
+# `mise install` provisions every tool below at the pinned version.
+# The Rust toolchain itself is pinned in rust-toolchain.toml (rustup/rust-analyzer/CI
+# honor it natively); mise owns everything else.
+min_version = "2026.1.0"
+
+[tools]
+# rust is ALSO pinned in rust-toolchain.toml (the authoritative source, honored by
+# CI and non-mise editors). It is repeated here only to override an ambient global
+# mise `rust` pin that would otherwise export RUSTUP_TOOLCHAIN and shadow that file.
+# Keep the two versions in sync. See docs/adr/0001 (§ toolchain).
+rust = "1.96.1"
+just = "1.55.1"                             # task runner (recipes live in ./justfile)
+prek = "0.4.6"                              # git hooks (pre-commit compatible)
+typos = "1.48.0"                            # source spell-checker
+cargo-insta = "1.48.0"                      # snapshot-test review (insta)
+hyperfine = "latest"                        # end-to-end benchmark harness (W6)
+cargo-binstall = "latest"                   # prebuilt-binary installer for cargo: tools
+"cargo:cargo-nextest" = "0.9.138"           # test runner
+"aqua:EmbarkStudios/cargo-deny" = "0.19.9"  # license / advisory / source governance
+
+# --- Provisioned when the wasm-GC backend work begins (W7, architecture.md §9) ---
+# wasmtime   = "46"     # runtime host (pin v46, set Config::wasm_gc(true) explicitly)
+# wasm-tools = "1.252"  # validate / print emitted .wasm
+
+[settings]
+# Use cargo-binstall for `cargo:` tools so they install as prebuilt binaries.
+cargo.binstall = true
+
+# Task entrypoints live in ./justfile (run via `just <recipe>`), not here.
+# See docs/adr/0002 — mise owns the toolchain; just owns the tasks.

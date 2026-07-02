@@ -1,0 +1,11 @@
+# Pins the Rust toolchain for the whole workspace. rustup, rust-analyzer, and
+# CI all honor this file, so every environment builds with the same compiler.
+# Auxiliary tools (nextest, deny, typos, ...) are pinned separately in mise.toml.
+#
+# No compilation target is listed: Cambium emits .wasm as data via `wasm-encoder`
+# and runs it with the native `wasmtime` crate — neither compiles our own Rust to
+# wasm, so the wasm32 target is not needed (add it only for a future web playground).
+[toolchain]
+channel = "1.96.1"
+components = ["rustfmt", "clippy"]
+profile = "minimal"
