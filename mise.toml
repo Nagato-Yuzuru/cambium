@@ -18,6 +18,7 @@ hyperfine = "latest"                        # end-to-end benchmark harness (W6)
 cargo-binstall = "latest"                   # prebuilt-binary installer for cargo: tools
 "cargo:cargo-nextest" = "0.9.138"           # test runner
 "aqua:EmbarkStudios/cargo-deny" = "0.19.9"  # license / advisory / source governance
+"cargo:cargo-llvm-cov" = "0.8.7"            # coverage: llvm-cov over nextest -> LCOV
 
 # --- Provisioned when the wasm-GC backend work begins (W7, architecture.md §9) ---
 # wasmtime   = "46"     # runtime host (pin v46, set Config::wasm_gc(true) explicitly)

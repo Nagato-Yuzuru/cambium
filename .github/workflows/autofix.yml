@@ -1,0 +1,28 @@
+name: autofix.ci # required name for the autofix.ci app
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs the mise-pinned toolchain + tools (just, clippy, rustfmt).
+      - uses: jdx/mise-action@v2
+      - uses: Swatinem/rust-cache@v2
+
+      # Apply clippy + rustfmt fixes in place (the `fix` recipe in ./justfile).
+      - name: Apply fixes
+        run: just fix
+
+      # Turns the resulting working-tree diff into a suggestion on the PR. The
+      # autofix.ci app does the pushing, so this job needs no write permission.
+      # Pinned to a SHA per autofix.ci's supply-chain guidance.
+      - uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a

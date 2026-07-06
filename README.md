@@ -19,8 +19,7 @@ layer that differentiates outward into phloem and inward into xylem. The shared 
 are solid Rust Scheme VMs. [Guile Hoot](https://spritely.institute/hoot/) compiles Scheme to
 wasm-GC but targets browsers, not wasmtime. Cambium combines a VM and a wasm-GC backend from one
 frontend, with the wasm-GC output running on wasmtime and a Rust host providing the imports —
-plus sandboxing, fuel metering, and debugging that only a server-side runtime needs. See
-[`docs/architecture.md`](docs/architecture.md) §3.
+plus sandboxing, fuel metering, and debugging that only a server-side runtime needs.
 
 ## Getting started
 
