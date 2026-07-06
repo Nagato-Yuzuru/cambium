@@ -1,15 +1,15 @@
-#[must_use]
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! Cambium's bottom layer: source positions, symbol interning, the source-file
+//! registry, and the diagnostic data model shared by every other crate.
+//!
+//! This crate knows nothing about syntax, IRs, runtime values, or IO
+//! (boundary rules: design.md §2). Rendering of diagnostics lives in the CLI.
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod diag;
+mod intern;
+mod source;
+mod span;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use diag::{Diagnostic, ToDiagnostic};
+pub use intern::{Interner, Sym};
+pub use source::SourceMap;
+pub use span::{FileId, Span, Spanned};
