@@ -1,10 +1,10 @@
 # Contributing to Cambium
 
 Cambium runs on an issue-first, TDD-first workflow. This document is the
-contract for how changes land. Design rationale lives in
-[docs/architecture.md](docs/architecture.md) (route research and decisions) and
-[docs/design.md](docs/design.md) (crate boundaries and work breakdown) — both
-in Chinese; issues carry English summaries of the relevant sections.
+contract for how changes land. Deep design rationale lives in local working
+documents (`docs/architecture.md`, `docs/design.md` — deliberately untracked);
+the committed record of decisions is [docs/adr/](docs/adr/), and issues carry
+English summaries of whatever design context they need.
 
 ## Setup
 
@@ -23,8 +23,8 @@ mise/just split.
 
 1. **Every change starts from an issue.** Pick one or open one with the
    matching template (Task / Bug report / RFC). Issues carry acceptance
-   criteria and belong to a milestone; milestones mirror the week plan in
-   docs/design.md §6.
+   criteria and belong to a milestone; milestones mirror the project's week
+   plan.
 2. **Branch per issue**: `<type>/<issue>-<slug>`, e.g. `feat/4-reader`.
    `gh issue develop <n> --name <branch> --checkout` links it to the issue.
 3. **TDD** (next section). Run `just ci` before pushing.
@@ -53,12 +53,11 @@ mise/just split.
 Proposal and record are two artifacts:
 
 - **RFC = an issue** using the RFC template. Required whenever a change moves
-  a crate boundary (docs/design.md §2), deviates from R7RS-small, or picks
-  between architecture-level alternatives. The issue thread is the discussion
-  archive.
+  a crate boundary, deviates from R7RS-small, or picks between
+  architecture-level alternatives. The issue thread is the discussion archive.
 - **ADR = the decision record** in [docs/adr/](docs/adr/), added by the PR
   that implements the accepted RFC (next number, short:
   Status/Context/Decision/Consequences).
 
-Decisions below that bar go straight into code comments or the design doc,
-in the same change that makes them true.
+Decisions below that bar go straight into code comments, in the same change
+that makes them true.

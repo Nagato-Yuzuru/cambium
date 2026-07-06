@@ -2,9 +2,9 @@
 
 Short records of decisions that shape the codebase: one file per decision,
 numbered, immutable after acceptance — a superseding decision gets a new ADR
-that links back. The research and rationale behind the route live in
-[../architecture.md](../architecture.md) and [../design.md](../design.md);
-ADRs capture the decision, not the research.
+that links back. The research and rationale behind the route live in local
+working documents (`docs/architecture.md`, `docs/design.md` — deliberately
+untracked); ADRs capture the decision, not the research.
 
 New ADRs normally come out of accepted RFC issues and land in the PR that
 implements them (see [../../CONTRIBUTING.md](../../CONTRIBUTING.md)).
