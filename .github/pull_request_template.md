@@ -5,9 +5,8 @@
 ## Checklist
 
 - [ ] `just ci` passes locally (fmt, clippy, tests, `cargo deny`, typos)
-- [ ] Tests were written before the implementation (red → green; see CONTRIBUTING.md)
+- [ ] Tests were written before the implementation (red → green)
 - [ ] Tests cover the change: a positive case asserting concrete values, a negative case asserting the specific error, and boundaries (empty / one / many / off-by-one)
-- [ ] Crate "must not know" rules hold (docs/design.md §2) — or an RFC issue is linked
 - [ ] Public items have doc comments stating panics, units, and invariants
 - [ ] No new dependency — or a new one is justified and passes `cargo deny`
 - [ ] Commits follow Conventional Commits (`type: summary`)

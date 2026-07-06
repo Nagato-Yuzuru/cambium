@@ -6,8 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        The issue thread is the discussion record. When an RFC is **accepted**, its decision
-        is recorded as an ADR in `docs/adr/` by the implementing PR (see CONTRIBUTING.md).
+        The issue thread is the discussion and decision record; close it with the
+        disposition stated in a final comment.
   - type: textarea
     id: summary
     attributes:
