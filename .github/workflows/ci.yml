@@ -19,16 +19,18 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
 
       # Installs the mise-pinned tools (just, nextest, cargo-deny, typos, ...).
-      - uses: jdx/mise-action@v2
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
 
       # rustup on the runner reads rust-toolchain.toml and installs the pinned toolchain.
       - name: Toolchain versions
         run: rustc --version && cargo --version
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
       # Steps invoke the shared `just` recipes so command definitions live only in
       # the justfile; kept as separate steps for per-check pass/fail annotations.
