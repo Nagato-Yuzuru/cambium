@@ -22,9 +22,18 @@ fmt-check:
 lint:
     cargo clippy --all-targets --all-features --workspace
 
+# Auto-fix what clippy and rustfmt can fix in place (used by autofix.ci in CI).
+fix:
+    cargo clippy --fix --all-targets --all-features --workspace --allow-dirty --allow-no-vcs
+    cargo fmt --all
+
 # Run the test suite (nextest).
 test:
     cargo nextest run --workspace
+
+# Coverage as LCOV (llvm-cov over nextest) for Codecov; writes ./lcov.info.
+coverage:
+    cargo llvm-cov nextest --workspace --lcov --output-path lcov.info
 
 # Spell-check the source tree.
 spell:

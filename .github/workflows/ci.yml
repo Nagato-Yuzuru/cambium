@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      # Installs the mise-pinned tools (just, nextest, cargo-deny, typos, ...).
+      # cache: false — mise's cache doesn't preserve the rustup components from
+      # rust-toolchain.toml (rustfmt/clippy/llvm-tools), so a cache hit drops
+      # them and breaks fmt-check/clippy on later runs.
+      - uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4.2.0
+        with:
+          cache: false
+
+      # rustup on the runner reads rust-toolchain.toml and installs the pinned toolchain.
+      - name: Toolchain versions
+        run: rustc --version && cargo --version
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+
+      # Steps invoke the shared `just` recipes so command definitions live only in
+      # the justfile; kept as separate steps for per-check pass/fail annotations.
+      - name: Format
+        run: just fmt-check
+
+      - name: Clippy
+        run: just lint
+
+      - name: Test
+        run: just test
+
+      - name: Dependency audit
+        run: just deny
+
+      - name: Spelling
+        run: just spell

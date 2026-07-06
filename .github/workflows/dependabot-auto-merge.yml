@@ -1,0 +1,30 @@
+name: Dependabot auto-merge
+
+# Enables auto-merge on Dependabot minor/patch PRs; GitHub completes the merge
+# once required checks pass. Prerequisites (repo settings, one-time):
+#   - Settings -> General -> "Allow auto-merge" is enabled.
+#   - Branch protection on `main` requires the CI checks — otherwise auto-merge
+#     completes immediately without waiting for CI.
+on: pull_request
+
+# No workflow-level permissions; only the job that needs write access grants it.
+permissions: {}
+
+jobs:
+  auto-merge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+
+      - name: Enable auto-merge for minor and patch updates
+        if: steps.meta.outputs.update-type == 'version-update:semver-minor' || steps.meta.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

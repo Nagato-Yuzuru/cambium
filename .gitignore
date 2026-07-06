@@ -2,6 +2,9 @@
 /target/
 **/*.rs.bk
 
+# Coverage (cargo-llvm-cov -> LCOV)
+/lcov.info
+
 # insta: review-pending snapshots (committed snapshots are *.snap)
 *.snap.new
 *.pending-snap
