@@ -1,0 +1,107 @@
+# CodeRabbit configuration — https://docs.coderabbit.ai/reference/configuration
+#
+# CodeRabbit reviews pull requests via its GitHub App (free for public repos);
+# there is no workflow file — this YAML is the whole config. Install the app
+# once at https://coderabbit.ai and grant it access to this repository.
+# Reviews run on CodeRabbit's infrastructure, so the existing .github/workflows
+# CI is untouched; `github-checks` below lets CodeRabbit read its results.
+#
+# The path_instructions inline the project's boundary and correctness
+# conventions directly (rather than citing design docs), because CodeRabbit
+# only sees what is committed to this repo.
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# Review comments are written in English.
+language: "en-US"
+early_access: false
+
+reviews:
+  # "assertive" posts more, higher-scrutiny comments — wanted for a portfolio /
+  # learning project where every review gets read. Drop to "chill" if noisy.
+  profile: "assertive"
+  # Comment-only reviews; don't gate merges on a CodeRabbit "request changes".
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "main"
+
+  # Skip generated/vendored noise. `!` excludes; everything else is reviewed.
+  path_filters:
+    - "!target/**"
+    - "!**/*.lock"
+    - "!.claude/**"
+
+  path_instructions:
+    - path: "**/*.rs"
+      instructions: |-
+        Rust 2024 edition; unsafe is denied, clippy all=deny / pedantic=warn,
+        rustfmt enforced — never restate what those already catch, add only what
+        a senior reviewer would. This is a Scheme bytecode-VM interpreter built
+        as a Cargo workspace with a strict layered design. Priority checks:
+          1. Crate boundaries: dependencies flow only downward and same-layer
+             crates don't depend on each other. Each crate has a "must-not-know"
+             list — e.g. vm::Value must never reference core::CoreExpr; reader
+             and core must not depend on each other; the wasm host consumes bytes
+             only, never the compiler internals.
+          2. Errors fail loudly: no silent unwrap/expect/`?`-swallowing or
+             fallback defaults on internal paths; handle explicitly only at
+             boundaries. The reader must return a positioned error — never panic
+             — on malformed input.
+          3. Single source of truth: Prim and OpCode plus their derived
+             name/arity/stack-effect tables come from one authoritative macro
+             (prim!/opcode!) — flag any hand-duplicated table. Prefer precise
+             types over escape hatches; nothing pub wider than needed
+             (unreachable_pub is on).
+          4. No speculative generality or perf machinery before benchmarks:
+             NaN-boxing, superinstructions (keep opcodes ≤40), mark-sweep GC and
+             move analysis are deferred perf milestones — don't push them early.
+             An abstraction earns its place at the second concrete use, not the
+             first.
+          5. Tail calls: the VM self-manages its frame stack (a TailCall op
+             reuses frames). Flag anything that recurses on Rust's native stack
+             in the dispatch loop or breaks tail-position handling —
+             million-iteration loops must not grow the stack.
+        Do NOT report these deliberate, already-decided choices as defects: the
+        phase-1 Rc letrec-cycle leak; immutable strings (Str(Rc<str>), no
+        string-set!); loop + match-u8 dispatch instead of computed goto;
+        fixnum+flonum only, with bignum and rational deferred; the intentional
+        Datum/Const shape duplication that keeps reader and core independent;
+        Backend::Error as a per-backend associated type. These are design
+        decisions, not bugs.
+    - path: "**/tests/**"
+      instructions: |-
+        Tests follow the project's three-part rule: a positive case asserting
+        concrete values, a negative case asserting the specific error variant
+        (not just "is_err"), and boundaries (empty / one / many / off-by-one).
+        Flag tests that assert only "no panic" or truthiness, and tests that mock
+        the unit under test. Behavior fixtures belong in tests/corpus (one .scm
+        per behavior, expected output via a `;; =>` comment), not in src/ and not
+        encoded by directory name.
+    - path: "**/Cargo.toml"
+      instructions: |-
+        New third-party dependencies must clear a bar: prefer std and
+        already-declared deps; a new crate must be maintained, license-clean
+        (deny.toml is the license/advisory gate), and pull in less than it saves.
+        malachite, rug, walrus, and anything built on the dead stringref proposal
+        are already ruled out — flag any reintroduction. Every crate's Cargo.toml
+        must carry `[lints] workspace = true`.
+
+  tools:
+    # Rust linter — mirrors the project's `just lint`.
+    clippy:
+      enabled: true
+    # Secret scanning — important for a public repository.
+    gitleaks:
+      enabled: true
+    # Let CodeRabbit read the existing GitHub Actions CI check results.
+    github-checks:
+      enabled: true
+
+chat:
+  auto_reply: true
