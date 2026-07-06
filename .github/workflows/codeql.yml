@@ -1,0 +1,39 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly full scan so alerts stay fresh even without pushes (Mon 05:23 UTC).
+    - cron: "23 5 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (rust)
+    runs-on: ubuntu-latest
+    permissions:
+      # CodeQL uploads its SARIF results to code scanning; the rest inherit read.
+      security-events: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@c35d1b164463ee62a100735382aaaa525c5d3496 # codeql-bundle-v2.25.6
+        with:
+          languages: rust
+          # Rust analysis is GA and extraction needs no compile, so we skip the
+          # toolchain/build the other workflows set up via mise.
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@c35d1b164463ee62a100735382aaaa525c5d3496 # codeql-bundle-v2.25.6
