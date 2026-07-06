@@ -1,0 +1,44 @@
+name: RFC
+description: "Design proposal: crate-boundary changes, R7RS-small deviations, or architecture-level choices"
+title: "RFC: "
+labels: ["rfc"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The issue thread is the discussion record. When an RFC is **accepted**, its decision
+        is recorded as an ADR in `docs/adr/` by the implementing PR (see CONTRIBUTING.md).
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: The proposal in a few sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why now; what stays hard or breaks without it.
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Design
+      description: Enough detail to implement from.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Crate boundaries (design.md §2), R7RS-small conformance, performance, documentation.
+  - type: textarea
+    id: unresolved
+    attributes:
+      label: Unresolved questions

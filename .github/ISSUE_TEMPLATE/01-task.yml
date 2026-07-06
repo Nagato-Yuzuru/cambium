@@ -1,0 +1,25 @@
+name: Task
+description: Implementation work with acceptance criteria (issue-first workflow)
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What this delivers and why. Link the relevant design-doc section (docs/design.md §…, docs/architecture.md §…).
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checkable outcomes. Tests follow the three-part rule (positive / negative / boundary); language-level features are corpus-first (see CONTRIBUTING.md).
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: input
+    id: crates
+    attributes:
+      label: Affected crates
+      placeholder: cambium-reader, cambium-core
