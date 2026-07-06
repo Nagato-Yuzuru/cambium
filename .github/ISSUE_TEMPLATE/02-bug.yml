@@ -1,0 +1,31 @@
+name: Bug report
+description: Wrong behavior, with a reproducer
+labels: ["bug"]
+body:
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproducer
+      description: Smallest Scheme program (or API call) that shows the problem.
+      render: scheme
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should happen, per R7RS-small (or Chibi-Scheme as the reference implementation). Cite the section when possible.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happens instead — exact output / error / diagnostic.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit
+      placeholder: git rev-parse --short HEAD
