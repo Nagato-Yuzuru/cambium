@@ -16,13 +16,18 @@ impl SourceMap {
     /// Creates an empty registry.
     #[must_use]
     pub fn new() -> Self {
-        todo!()
+        Self::default()
     }
 
     /// Registers a source text under `name` and returns its handle.
+    ///
+    /// # Panics
+    ///
+    /// Panics after `u32::MAX` registrations (a `FileId` is 32 bits).
     pub fn add(&mut self, name: impl Into<String>, source: impl Into<String>) -> FileId {
-        let _ = (name, source);
-        todo!()
+        let id = FileId(u32::try_from(self.files.len()).expect("more than u32::MAX source files"));
+        self.files.push(SimpleFile::new(name.into(), source.into()));
+        id
     }
 
     /// The name a file was registered under.
@@ -32,8 +37,10 @@ impl SourceMap {
     /// Panics on an unknown [`FileId`] (one minted by a different map).
     #[must_use]
     pub fn name(&self, id: FileId) -> &str {
-        let _ = id;
-        todo!()
+        let Some(file) = self.file(id) else {
+            panic!("unknown FileId: {id:?}")
+        };
+        file.name().as_str()
     }
 
     /// The full source text of a file.
@@ -43,13 +50,16 @@ impl SourceMap {
     /// Panics on an unknown [`FileId`] (one minted by a different map).
     #[must_use]
     pub fn source(&self, id: FileId) -> &str {
-        let _ = id;
-        todo!()
+        let Some(file) = self.file(id) else {
+            panic!("unknown FileId: {id:?}")
+        };
+        file.source().as_str()
     }
 
-    fn file(&self, id: FileId) -> Result<&SimpleFile<String, String>, Error> {
-        let _ = id;
-        todo!()
+    fn file(&self, id: FileId) -> Option<&SimpleFile<String, String>> {
+        usize::try_from(id.0)
+            .ok()
+            .and_then(|index| self.files.get(index))
     }
 }
 
@@ -59,15 +69,17 @@ impl<'a> Files<'a> for SourceMap {
     type Source = &'a str;
 
     fn name(&'a self, id: FileId) -> Result<&'a str, Error> {
-        Ok(self.file(id)?.name().as_str())
+        Ok(self.file(id).ok_or(Error::FileMissing)?.name().as_str())
     }
 
     fn source(&'a self, id: FileId) -> Result<&'a str, Error> {
-        Ok(self.file(id)?.source().as_str())
+        Ok(self.file(id).ok_or(Error::FileMissing)?.source().as_str())
     }
 
     fn line_index(&'a self, id: FileId, byte_index: usize) -> Result<usize, Error> {
-        self.file(id)?.line_index((), byte_index)
+        self.file(id)
+            .ok_or(Error::FileMissing)?
+            .line_index((), byte_index)
     }
 
     fn line_range(
@@ -75,7 +87,9 @@ impl<'a> Files<'a> for SourceMap {
         id: FileId,
         line_index: usize,
     ) -> Result<std::ops::Range<usize>, Error> {
-        self.file(id)?.line_range((), line_index)
+        self.file(id)
+            .ok_or(Error::FileMissing)?
+            .line_range((), line_index)
     }
 }
 

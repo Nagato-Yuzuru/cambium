@@ -19,13 +19,15 @@ impl Interner {
     /// Creates an empty interner.
     #[must_use]
     pub fn new() -> Self {
-        todo!()
+        Self {
+            inner: StringInterner::new(),
+            gensym_next: 0,
+        }
     }
 
     /// Interns `s`, returning the same [`Sym`] for equal strings.
     pub fn intern(&mut self, s: &str) -> Sym {
-        let _ = s;
-        todo!()
+        Sym(self.inner.get_or_intern(s))
     }
 
     /// The text behind `sym`.
@@ -35,8 +37,9 @@ impl Interner {
     /// Panics if `sym` came from a different interner (programmer error).
     #[must_use]
     pub fn resolve(&self, sym: Sym) -> &str {
-        let _ = sym;
-        todo!()
+        self.inner
+            .resolve(sym.0)
+            .expect("Sym from a different interner")
     }
 
     /// A fresh symbol distinct from every [`Sym`] this interner has returned
@@ -47,8 +50,13 @@ impl Interner {
     /// same spelling resolves to the same `Sym`; hygiene relies on the
     /// expander minting temporaries only after user symbols are interned.
     pub fn gensym(&mut self, prefix: &str) -> Sym {
-        let _ = prefix;
-        todo!()
+        loop {
+            let candidate = format!("{prefix}%{}", self.gensym_next);
+            self.gensym_next += 1;
+            if self.inner.get(&candidate).is_none() {
+                return Sym(self.inner.get_or_intern(candidate));
+            }
+        }
     }
 }
 
@@ -87,7 +95,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "different interner")]
     fn resolve_panics_on_symbol_from_another_interner() {
-        let mut a = Interner::new();
+        let a = Interner::new();
         let mut b = Interner::new();
         b.intern("only-in-b");
         let foreign = b.intern("x");

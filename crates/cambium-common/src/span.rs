@@ -24,8 +24,11 @@ impl Span {
     /// Creates a span. `start <= end` is the caller's contract (debug-asserted).
     #[must_use]
     pub fn new(file: FileId, start: u32, end: u32) -> Self {
-        let _ = (file, start, end);
-        todo!()
+        debug_assert!(
+            start <= end,
+            "span requires start <= end, got {start}..{end}"
+        );
+        Self { file, start, end }
     }
 
     /// The smallest span covering both `self` and `other`.
@@ -35,14 +38,21 @@ impl Span {
     /// Panics if the two spans point into different files.
     #[must_use]
     pub fn merge(self, other: Self) -> Self {
-        let _ = other;
-        todo!()
+        assert_eq!(
+            self.file, other.file,
+            "cannot merge spans from different files"
+        );
+        Self {
+            file: self.file,
+            start: self.start.min(other.start),
+            end: self.end.max(other.end),
+        }
     }
 
     /// Byte range form, as consumed by diagnostic labels and slicing.
     #[must_use]
     pub fn range(self) -> Range<usize> {
-        todo!()
+        self.start as usize..self.end as usize
     }
 }
 
@@ -58,14 +68,15 @@ pub struct Spanned<T> {
 impl<T> Spanned<T> {
     /// Pairs a value with its span.
     pub fn new(node: T, span: Span) -> Self {
-        let _ = (node, span);
-        todo!()
+        Self { node, span }
     }
 
     /// Transforms the value, keeping the span.
     pub fn map<U>(self, f: impl FnOnce(T) -> U) -> Spanned<U> {
-        let _ = f;
-        todo!()
+        Spanned {
+            node: f(self.node),
+            span: self.span,
+        }
     }
 }
 
