@@ -9,6 +9,12 @@ rust-version = "1.96"
 license = "MIT"
 authors = ["Nagato Yuzuru <nagato@yuzuru.me>"]
 
+[workspace.dependencies]
+# Diagnostics data model only — the `termcolor` rendering feature is enabled
+# solely by the CLI crate (design.md §3.1: data in common, rendering in cli).
+codespan-reporting = { version = "0.13.1", default-features = false, features = ["std"] }
+string-interner = { version = "0.20.0", default-features = false, features = ["std", "backends", "inline-more"] }
+
 [workspace.lints.rust]
 unsafe_code = "deny"
 missing_docs = "warn"
